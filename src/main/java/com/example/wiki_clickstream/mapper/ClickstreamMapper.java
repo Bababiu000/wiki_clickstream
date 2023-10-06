@@ -16,5 +16,9 @@ import java.util.List;
  */
 public interface ClickstreamMapper extends BaseMapper<Clickstream> {
 
-    List<Clickstream> getDataByDate(@Param("date") LocalDate date);
+    List<String> getDateRanges();
+
+    List<Clickstream> getDCRoot(@Param("date") LocalDate date);
+
+    List<Clickstream> getDCs(@Param("date") LocalDate date, @Param("dcRoot") Integer dcRoot);
 }

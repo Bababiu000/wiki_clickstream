@@ -6,6 +6,7 @@ import com.example.wiki_clickstream.utils.Result;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -16,5 +17,9 @@ import java.util.List;
  * @since 2023-09-23
  */
 public interface IClickstreamService extends IService<Clickstream> {
-    List<Clickstream> getDataByDate(String date);
+    Map<String, Object> getDateRange();
+
+    List<Clickstream> getDCRoot(String date);
+
+    List<Clickstream> getDCs(String date, Integer dcRoot);
 }

@@ -9,7 +9,10 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -25,8 +28,53 @@ public class ClickstreamServiceImpl extends ServiceImpl<ClickstreamMapper, Click
     @Resource
     private ClickstreamMapper clickstreamMapper;
 
-    public List<Clickstream> getDataByDate(String dateStr) {
-        LocalDate parsedDate = LocalDate.parse(dateStr);
-        return clickstreamMapper.getDataByDate(parsedDate);
+    @Override
+    public Map<String, Object> getDateRange() {
+
+        Map<String, Object> dateRangeData = new HashMap<>();
+        List<String> dateRanges = clickstreamMapper.getDateRanges();
+
+        List<String> years = new ArrayList<>();
+        Map<Integer, List<Integer>> months = new HashMap<>();
+        int maxYear = 0;
+        int maxMonth = 0;
+
+        for (String dateRange : dateRanges) {
+            String[] parts = dateRange.split("-");
+            int year = Integer.parseInt(parts[0]);
+            int month = Integer.parseInt(parts[1]);
+
+            if (!years.contains(parts[0])) {
+                years.add(parts[0]);
+            }
+
+            if (!months.containsKey(year)) {
+                months.put(year, new ArrayList<>());
+            }
+            months.get(year).add(month);
+
+            if (year > maxYear || (year == maxYear && month > maxMonth)) {
+                maxYear = year;
+                maxMonth = month;
+            }
+        }
+
+        dateRangeData.put("years", years);
+        dateRangeData.put("months", months);
+        dateRangeData.put("maxYear", maxYear);
+        dateRangeData.put("maxMonth", maxMonth);
+
+        return dateRangeData;
+    }
+
+    public List<Clickstream> getDCRoot(String dateStr) {
+        LocalDate parsedDate = LocalDate.parse(dateStr.concat("-01"), DateTimeFormatter.ofPattern("yyyy-M-dd"));
+        return clickstreamMapper.getDCRoot(parsedDate);
+    }
+
+    @Override
+    public List<Clickstream> getDCs(String dateStr, Integer dcRoot) {
+        LocalDate parsedDate = LocalDate.parse(dateStr.concat("-01"), DateTimeFormatter.ofPattern("yyyy-M-dd"));
+        return clickstreamMapper.getDCs(parsedDate, dcRoot);
     }
 }
