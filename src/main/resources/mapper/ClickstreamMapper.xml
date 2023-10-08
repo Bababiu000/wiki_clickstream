@@ -5,14 +5,27 @@
         SELECT DISTINCT DATE_FORMAT(date, '%Y-%m') AS date_range
         FROM clickstream
     </select>
-    <select id="getDCRoot" resultType="com.example.wiki_clickstream.entity.Clickstream">
+    <select id="getList" resultType="com.example.wiki_clickstream.entity.Clickstream">
         SELECT *
-        FROM clickstream
-        WHERE date = #{date} AND dict_idx = dc_dict_idx
+        FROM clickstream c
+        INNER JOIN (
+            SELECT dc_dict_idx, density
+            FROM clickstream
+            WHERE dict_idx = dc_dict_idx AND date = #{date}
+            ORDER BY density DESC
+            LIMIT #{pageSize} OFFSET #{offset}
+        ) AS centers ON c.dc_dict_idx = centers.dc_dict_idx
+        WHERE date = #{date}
+        ORDER BY centers.density DESC, c.dc_dict_idx, c.density DESC;
     </select>
-    <select id="getDCs" resultType="com.example.wiki_clickstream.entity.Clickstream">
+    <select id="getCenters" resultType="com.example.wiki_clickstream.entity.Clickstream">
         SELECT *
         FROM clickstream
-        WHERE date = #{date} AND dc_dict_idx = #{dcRoot}
+        WHERE date = #{date} AND dict_idx = dc_dict_idx ORDER BY density desc
+    </select>
+    <select id="getDetail" resultType="com.example.wiki_clickstream.entity.Clickstream">
+        SELECT *
+        FROM clickstream
+        WHERE date = #{date} AND dc_dict_idx = #{center} ORDER BY density desc
     </select>
 </mapper>

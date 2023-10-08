@@ -29,8 +29,11 @@ public class Clickstream implements Serializable {
 
     private Long density;
 
+    private Long label;
+
     private Long dcDictIdx;
 
     private LocalDate date;
 
+    private Long centerDis;
 }
