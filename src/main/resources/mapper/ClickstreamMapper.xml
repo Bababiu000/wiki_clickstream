@@ -11,12 +11,35 @@
         INNER JOIN (
             SELECT dc_dict_idx, density
             FROM clickstream
-            WHERE dict_idx = dc_dict_idx AND date = #{date}
+            WHERE dict_idx = dc_dict_idx
+            AND date = #{date}
+            AND dc_dict_idx IN (
+                SELECT dc_dict_idx
+                FROM clickstream
+                WHERE date = #{date}
+                <if test="keyword != null and keyword != ''">
+                    AND name LIKE CONCAT('%', #{keyword}, '%')
+                </if>
+            )
             ORDER BY density DESC
             LIMIT #{pageSize} OFFSET #{offset}
         ) AS centers ON c.dc_dict_idx = centers.dc_dict_idx
         WHERE date = #{date}
         ORDER BY centers.density DESC, c.dc_dict_idx, c.density DESC;
+    </select>
+    <select id="getListTotal" resultType="Long">
+        SELECT COUNT(*) as total_count
+        FROM clickstream
+        WHERE dict_idx = dc_dict_idx
+        AND date = #{date}
+        AND dc_dict_idx IN (
+            SELECT dc_dict_idx
+            FROM clickstream
+            WHERE date = #{date}
+            <if test="keyword != null and keyword != ''">
+                AND name LIKE CONCAT('%', #{keyword}, '%')
+            </if>
+        );
     </select>
     <select id="getCenters" resultType="com.example.wiki_clickstream.entity.Clickstream">
         SELECT *

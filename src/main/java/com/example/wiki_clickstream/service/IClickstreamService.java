@@ -2,9 +2,6 @@ package com.example.wiki_clickstream.service;
 
 import com.example.wiki_clickstream.entity.Clickstream;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.example.wiki_clickstream.utils.Result;
-import com.example.wiki_clickstream.vo.ClickstreamVo;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 import java.util.Map;
@@ -20,7 +17,7 @@ import java.util.Map;
 public interface IClickstreamService extends IService<Clickstream> {
     Map<String, Object> getDateRange();
 
-    Map<String, Object> getList(String date, Integer pageNum, Integer pageSize);
+    Map<String, Object> getList(String date, Integer pageNum, Integer pageSize, String keyword);
 
     List<Clickstream> getCenters(String date);
 

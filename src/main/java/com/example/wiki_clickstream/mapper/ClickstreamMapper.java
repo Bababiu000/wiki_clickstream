@@ -2,7 +2,6 @@ package com.example.wiki_clickstream.mapper;
 
 import com.example.wiki_clickstream.entity.Clickstream;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.example.wiki_clickstream.vo.ClickstreamVo;
 import org.apache.ibatis.annotations.Param;
 import java.time.LocalDate;
 import java.util.List;
@@ -19,7 +18,10 @@ public interface ClickstreamMapper extends BaseMapper<Clickstream> {
 
     List<String> getDateRanges();
 
-    List<Clickstream> getList(@Param("date") LocalDate date, @Param("offset") Integer offset, @Param("pageSize") Integer pageSize);
+    List<Clickstream> getList(@Param("date") LocalDate date, @Param("offset") Integer offset,
+                              @Param("pageSize") Integer pageSize, @Param("keyword") String keyword);
+
+    Long getListTotal(@Param("date") LocalDate date, @Param("keyword") String keyword);
 
     List<Clickstream> getCenters(@Param("date") LocalDate date);
 

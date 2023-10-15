@@ -1,7 +1,6 @@
 package com.example.wiki_clickstream.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.example.wiki_clickstream.entity.Clickstream;
 import com.example.wiki_clickstream.mapper.ClickstreamMapper;
 import com.example.wiki_clickstream.service.IClickstreamService;
@@ -13,10 +12,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -63,6 +59,15 @@ public class ClickstreamServiceImpl extends ServiceImpl<ClickstreamMapper, Click
             }
         }
 
+        // 对 years 列表进行排序
+        Collections.sort(years);
+        Collections.reverse(years);
+
+        // 对 months 列表中的每个年份的月份列表进行排序
+        for (List<Integer> monthList : months.values()) {
+            Collections.sort(monthList);
+        }
+
         dateRangeData.put("years", years);
         dateRangeData.put("months", months);
         dateRangeData.put("maxYear", maxYear);
@@ -72,9 +77,9 @@ public class ClickstreamServiceImpl extends ServiceImpl<ClickstreamMapper, Click
     }
 
     @Override
-    public Map<String, Object> getList(String dateStr, Integer pageNum, Integer pageSize) {
+    public Map<String, Object> getList(String dateStr, Integer pageNum, Integer pageSize, String keyword) {
         LocalDate parsedDate = LocalDate.parse(dateStr.concat("-01"), DateTimeFormatter.ofPattern("yyyy-M-dd"));
-        List<Clickstream> clickstreams = clickstreamMapper.getList(parsedDate, (pageNum - 1) * pageSize, pageSize);
+        List<Clickstream> clickstreams = clickstreamMapper.getList(parsedDate, (pageNum - 1) * pageSize, pageSize, keyword);
 
         List<ClickstreamVo> list = new ArrayList<>();
         ClickstreamVo currentCenter = null;
@@ -90,9 +95,7 @@ public class ClickstreamServiceImpl extends ServiceImpl<ClickstreamMapper, Click
             }
         }
 
-        QueryWrapper<Clickstream> wrapper = new QueryWrapper<>();
-        wrapper.eq("date", parsedDate).apply("dict_idx = dc_dict_idx");
-        Long total = clickstreamMapper.selectCount(wrapper);
+        Long total = clickstreamMapper.getListTotal(parsedDate, keyword);
 
         Map<String, Object> result = new HashMap<>();
         result.put("list", list);

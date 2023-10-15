@@ -38,8 +38,11 @@ public class ClickstreamController {
     }
 
     @GetMapping("/list/{date}")
-    public Result<Map<String, Object>> getList(@PathVariable String date, @RequestParam(defaultValue = "1") Integer pageNum, @RequestParam(defaultValue = "10") Integer pageSize) {
-        Map<String, Object> clickstreams = clickstreamService.getList(date, pageNum, pageSize);
+    public Result<Map<String, Object>> getList(@PathVariable String date,
+                                               @RequestParam(defaultValue = "1") Integer pageNum,
+                                               @RequestParam(defaultValue = "10") Integer pageSize,
+                                               @RequestParam(defaultValue = "") String keyword) {
+        Map<String, Object> clickstreams = clickstreamService.getList(date, pageNum, pageSize, keyword);
         return Result.success(clickstreams);
     }
 
