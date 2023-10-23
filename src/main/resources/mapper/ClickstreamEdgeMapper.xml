@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.wiki_clickstream.mapper.ClickstreamEdgeMapper">
+
+    <select id="getCenterEdges" resultType="com.example.wiki_clickstream.entity.ClickstreamEdge">
+        SELECT c_e.*
+        FROM clickstream_node c_n_1
+        INNER JOIN clickstream_edge c_e ON c_n_1.date = c_e.date AND c_n_1.dict_idx = c_e.source_dict_idx
+        LEFT JOIN clickstream_node c_n_2 ON c_n_2.date = c_e.date AND c_n_2.dict_idx = c_e.target_dict_idx
+        WHERE c_n_1.dc_dict_idx = c_n_1.dict_idx AND c_n_2.dc_dict_idx = c_n_2.dict_idx AND c_n_1.date = #{date};
+    </select>
+    <select id="getClusterEdges" resultType="com.example.wiki_clickstream.entity.ClickstreamEdge">
+        SELECT c_e.*
+        FROM clickstream_node c_n_1
+        INNER JOIN clickstream_edge c_e ON c_n_1.date = c_e.date AND c_n_1.dict_idx = c_e.source_dict_idx
+        LEFT JOIN clickstream_node c_n_2 ON c_n_2.date = c_e.date AND c_n_2.dict_idx = c_e.target_dict_idx
+        WHERE c_n_1.dc_dict_idx = #{center} AND c_n_2.dc_dict_idx = #{center} AND c_n_1.date = #{date};
+    </select>
+</mapper>
