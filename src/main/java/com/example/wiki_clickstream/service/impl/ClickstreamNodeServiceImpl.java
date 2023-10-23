@@ -1,11 +1,10 @@
 package com.example.wiki_clickstream.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.example.wiki_clickstream.entity.Clickstream;
-import com.example.wiki_clickstream.mapper.ClickstreamMapper;
-import com.example.wiki_clickstream.service.IClickstreamService;
+import com.example.wiki_clickstream.entity.ClickstreamNode;
+import com.example.wiki_clickstream.mapper.ClickstreamNodeMapper;
+import com.example.wiki_clickstream.service.IClickstreamNodeService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.wiki_clickstream.vo.ClickstreamVo;
+import com.example.wiki_clickstream.vo.ClickstreamNodeVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -23,16 +22,16 @@ import java.util.*;
  * @since 2023-09-23
  */
 @Service
-public class ClickstreamServiceImpl extends ServiceImpl<ClickstreamMapper, Clickstream> implements IClickstreamService {
+public class ClickstreamNodeServiceImpl extends ServiceImpl<ClickstreamNodeMapper, ClickstreamNode> implements IClickstreamNodeService {
 
     @Resource
-    private ClickstreamMapper clickstreamMapper;
+    private ClickstreamNodeMapper clickstreamNodeMapper;
 
     @Override
     public Map<String, Object> getDateRange() {
 
         Map<String, Object> dateRangeData = new HashMap<>();
-        List<String> dateRanges = clickstreamMapper.getDateRanges();
+        List<String> dateRanges = clickstreamNodeMapper.getDateRanges();
 
         List<String> years = new ArrayList<>();
         Map<Integer, List<Integer>> months = new HashMap<>();
@@ -79,23 +78,23 @@ public class ClickstreamServiceImpl extends ServiceImpl<ClickstreamMapper, Click
     @Override
     public Map<String, Object> getList(String dateStr, Integer pageNum, Integer pageSize, String keyword) {
         LocalDate parsedDate = LocalDate.parse(dateStr.concat("-01"), DateTimeFormatter.ofPattern("yyyy-M-dd"));
-        List<Clickstream> clickstreams = clickstreamMapper.getList(parsedDate, (pageNum - 1) * pageSize, pageSize, keyword);
+        List<ClickstreamNode> clickstreamNodes = clickstreamNodeMapper.getList(parsedDate, (pageNum - 1) * pageSize, pageSize, keyword);
 
-        List<ClickstreamVo> list = new ArrayList<>();
-        ClickstreamVo currentCenter = null;
+        List<ClickstreamNodeVo> list = new ArrayList<>();
+        ClickstreamNodeVo currentCenter = null;
 
-        for (Clickstream clickstream : clickstreams) {
-            if (currentCenter == null || !clickstream.getDcDictIdx().equals(currentCenter.getDcDictIdx())) {
-                currentCenter = new ClickstreamVo();
-                BeanUtils.copyProperties(clickstream, currentCenter);
+        for (ClickstreamNode clickstreamNode : clickstreamNodes) {
+            if (currentCenter == null || !clickstreamNode.getDcDictIdx().equals(currentCenter.getDcDictIdx())) {
+                currentCenter = new ClickstreamNodeVo();
+                BeanUtils.copyProperties(clickstreamNode, currentCenter);
                 currentCenter.setMembers(new ArrayList<>());
                 list.add(currentCenter);
             } else {
-                currentCenter.getMembers().add(clickstream);
+                currentCenter.getMembers().add(clickstreamNode);
             }
         }
 
-        Long total = clickstreamMapper.getListTotal(parsedDate, keyword);
+        Long total = clickstreamNodeMapper.getListTotal(parsedDate, keyword);
 
         Map<String, Object> result = new HashMap<>();
         result.put("list", list);
@@ -104,14 +103,14 @@ public class ClickstreamServiceImpl extends ServiceImpl<ClickstreamMapper, Click
         return result;
     }
 
-    public List<Clickstream> getCenters(String dateStr) {
+    public List<ClickstreamNode> getCenters(String dateStr) {
         LocalDate parsedDate = LocalDate.parse(dateStr.concat("-01"), DateTimeFormatter.ofPattern("yyyy-M-dd"));
-        return clickstreamMapper.getCenters(parsedDate);
+        return clickstreamNodeMapper.getCenters(parsedDate);
     }
 
     @Override
-    public List<Clickstream> getDetail(String dateStr, Integer center) {
+    public List<ClickstreamNode> getDetail(String dateStr, Integer center) {
         LocalDate parsedDate = LocalDate.parse(dateStr.concat("-01"), DateTimeFormatter.ofPattern("yyyy-M-dd"));
-        return clickstreamMapper.getDetail(parsedDate, center);
+        return clickstreamNodeMapper.getDetail(parsedDate, center);
     }
 }

@@ -18,10 +18,10 @@ public class CodeGenerator {
                             .entity("entity")
                             .service("service")
                             .mapper("mapper")
-                            .pathInfo(Collections.singletonMap(OutputFile.mapperXml, "D:\\Code\\wiki_clickstream\\src\\main\\resources"));// 设置mapperXml生成路径
+                            .pathInfo(Collections.singletonMap(OutputFile.mapperXml, "D:\\Code\\wiki_clickstream\\src\\main\\resources\\mapper"));// 设置mapperXml生成路径
                 })
                 .strategyConfig(builder -> {
-                    builder.addInclude("clickstream"); // 设置需要生成的表名
+                    builder.addInclude("clickstream_edge"); // 设置需要生成的表名
                 })
                 .execute();
     }

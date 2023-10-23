@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.example.wiki_clickstream.mapper.ClickstreamMapper">
+<mapper namespace="com.example.wiki_clickstream.mapper.ClickstreamNodeMapper">
     <select id="getDateRanges" resultType="java.lang.String">
         SELECT DISTINCT DATE_FORMAT(date, '%Y-%m') AS date_range
-        FROM clickstream
+        FROM clickstream_node
     </select>
-    <select id="getList" resultType="com.example.wiki_clickstream.entity.Clickstream">
+    <select id="getList" resultType="com.example.wiki_clickstream.entity.ClickstreamNode">
         SELECT *
-        FROM clickstream c
+        FROM clickstream_node c
         INNER JOIN (
             SELECT dc_dict_idx, density
-            FROM clickstream
+            FROM clickstream_node
             WHERE dict_idx = dc_dict_idx
             AND date = #{date}
             AND dc_dict_idx IN (
                 SELECT dc_dict_idx
-                FROM clickstream
+                FROM clickstream_node
                 WHERE date = #{date}
                 <if test="keyword != null and keyword != ''">
                     AND name LIKE CONCAT('%', #{keyword}, '%')
@@ -29,26 +29,26 @@
     </select>
     <select id="getListTotal" resultType="Long">
         SELECT COUNT(*) as total_count
-        FROM clickstream
+        FROM clickstream_node
         WHERE dict_idx = dc_dict_idx
         AND date = #{date}
         AND dc_dict_idx IN (
             SELECT dc_dict_idx
-            FROM clickstream
+            FROM clickstream_node
             WHERE date = #{date}
             <if test="keyword != null and keyword != ''">
                 AND name LIKE CONCAT('%', #{keyword}, '%')
             </if>
         );
     </select>
-    <select id="getCenters" resultType="com.example.wiki_clickstream.entity.Clickstream">
+    <select id="getCenters" resultType="com.example.wiki_clickstream.entity.ClickstreamNode">
         SELECT *
-        FROM clickstream
+        FROM clickstream_node
         WHERE date = #{date} AND dict_idx = dc_dict_idx ORDER BY density desc
     </select>
-    <select id="getDetail" resultType="com.example.wiki_clickstream.entity.Clickstream">
+    <select id="getDetail" resultType="com.example.wiki_clickstream.entity.ClickstreamNode">
         SELECT *
-        FROM clickstream
+        FROM clickstream_node
         WHERE date = #{date} AND dc_dict_idx = #{center} ORDER BY density desc
     </select>
 </mapper>

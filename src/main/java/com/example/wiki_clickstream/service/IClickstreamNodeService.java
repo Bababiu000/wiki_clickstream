@@ -1,6 +1,6 @@
 package com.example.wiki_clickstream.service;
 
-import com.example.wiki_clickstream.entity.Clickstream;
+import com.example.wiki_clickstream.entity.ClickstreamNode;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -14,13 +14,13 @@ import java.util.Map;
  * @author 作者
  * @since 2023-09-23
  */
-public interface IClickstreamService extends IService<Clickstream> {
+public interface IClickstreamNodeService extends IService<ClickstreamNode> {
     Map<String, Object> getDateRange();
 
     Map<String, Object> getList(String date, Integer pageNum, Integer pageSize, String keyword);
 
-    List<Clickstream> getCenters(String date);
+    List<ClickstreamNode> getCenters(String date);
 
-    List<Clickstream> getDetail(String date, Integer center);
+    List<ClickstreamNode> getDetail(String date, Integer center);
 
 }

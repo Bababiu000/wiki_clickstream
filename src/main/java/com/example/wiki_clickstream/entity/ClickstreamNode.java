@@ -16,7 +16,7 @@ import java.time.LocalDate;
  * @since 2023-09-23
  */
 @Data
-public class Clickstream implements Serializable {
+public class ClickstreamNode implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
