@@ -5,10 +5,13 @@ import com.example.wiki_clickstream.entity.ClickstreamNode;
 import com.example.wiki_clickstream.service.IClickstreamNodeService;
 import com.example.wiki_clickstream.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.CacheControl;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -31,24 +34,30 @@ public class ClickstreamNodeController {
     }
 
     @GetMapping("/center/{date}")
-    public Result<List<ClickstreamNode>> getCenters(@PathVariable String date) {
-        List<ClickstreamNode> clickstreamNodes = clickstreamNodeService.getCenters(date);
-        return Result.success(clickstreamNodes);
+    public ResponseEntity<Result<List<ClickstreamNode>>> getCenterNodes(@PathVariable String date) {
+        List<ClickstreamNode> clickstreamNodes = clickstreamNodeService.getCenterNodes(date);
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.maxAge(1, TimeUnit.HOURS)) // 缓存1小时
+                .body(Result.success(clickstreamNodes));
     }
 
     @GetMapping("/list/{date}")
-    public Result<Map<String, Object>> getList(@PathVariable String date,
-                                               @RequestParam(defaultValue = "1") Integer pageNum,
-                                               @RequestParam(defaultValue = "10") Integer pageSize,
-                                               @RequestParam(defaultValue = "") String keyword) {
-        Map<String, Object> clickstreams = clickstreamNodeService.getList(date, pageNum, pageSize, keyword);
-        return Result.success(clickstreams);
+    public ResponseEntity<Result<Object>> getClusterNodes(@PathVariable String date,
+                                                          @RequestParam(defaultValue = "1") Integer pageNum,
+                                                          @RequestParam(defaultValue = "10") Integer pageSize,
+                                                          @RequestParam(defaultValue = "") String keyword) {
+        Map<String, Object> clickstreams = clickstreamNodeService.getNodeList(date, pageNum, pageSize, keyword);
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.maxAge(1, TimeUnit.HOURS)) // 缓存1小时
+                .body(Result.success(clickstreams));
     }
 
     @GetMapping("/cluster/{date}")
-    public Result<List<ClickstreamNode>> getDetail(@PathVariable String date, @RequestParam Integer center) {
-        List<ClickstreamNode> clickstreamNodes = clickstreamNodeService.getDetail(date, center);
-        return Result.success(clickstreamNodes);
+    public ResponseEntity<Result<List<ClickstreamNode>>> getClusterNodes(@PathVariable String date, @RequestParam Integer center) {
+        List<ClickstreamNode> clickstreamNodes = clickstreamNodeService.getClusterNodes(date, center);
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.maxAge(1, TimeUnit.HOURS)) // 缓存1小时
+                .body(Result.success(clickstreamNodes));
     }
 
 }

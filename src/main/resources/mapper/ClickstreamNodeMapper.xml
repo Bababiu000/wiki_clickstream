@@ -5,7 +5,7 @@
         SELECT DISTINCT DATE_FORMAT(date, '%Y-%m') AS date_range
         FROM clickstream_node
     </select>
-    <select id="getList" resultType="com.example.wiki_clickstream.entity.ClickstreamNode">
+    <select id="getNodeList" resultType="com.example.wiki_clickstream.entity.ClickstreamNode">
         SELECT *
         FROM clickstream_node c
         INNER JOIN (
@@ -41,12 +41,12 @@
             </if>
         );
     </select>
-    <select id="getCenters" resultType="com.example.wiki_clickstream.entity.ClickstreamNode">
+    <select id="getCenterNodes" resultType="com.example.wiki_clickstream.entity.ClickstreamNode">
         SELECT *
         FROM clickstream_node
         WHERE date = #{date} AND dict_idx = dc_dict_idx ORDER BY density desc
     </select>
-    <select id="getDetail" resultType="com.example.wiki_clickstream.entity.ClickstreamNode">
+    <select id="getClusterNodes" resultType="com.example.wiki_clickstream.entity.ClickstreamNode">
         SELECT *
         FROM clickstream_node
         WHERE date = #{date} AND dc_dict_idx = #{center} ORDER BY density desc
