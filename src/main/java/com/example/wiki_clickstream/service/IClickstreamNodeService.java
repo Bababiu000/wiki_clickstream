@@ -15,12 +15,12 @@ import java.util.Map;
  * @since 2023-09-23
  */
 public interface IClickstreamNodeService extends IService<ClickstreamNode> {
-    Map<String, Object> getDateRange();
+    Map<String, Object> getDateRange(String lang);
 
-    Map<String, Object> getNodeList(String date, Integer pageNum, Integer pageSize, String keyword);
+    Map<String, Object> getNodeList(String lang, String date, Integer pageNum, Integer pageSize, String keyword);
 
-    List<ClickstreamNode> getCenterNodes(String date);
+    List<ClickstreamNode> getCenterNodes(String lang, String date);
 
-    List<ClickstreamNode> getClusterNodes(String date, Integer center);
+    List<ClickstreamNode> getClusterNodes(String lang, String date, Integer center);
 
 }

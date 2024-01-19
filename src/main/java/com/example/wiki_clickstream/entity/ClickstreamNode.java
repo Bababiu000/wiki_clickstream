@@ -43,5 +43,5 @@ public class ClickstreamNode implements Serializable {
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate date;
 
-    private Long centerDis;
+    private String lang;
 }

@@ -27,34 +27,35 @@ public class ClickstreamNodeController {
     @Autowired
     private IClickstreamNodeService clickstreamNodeService;
 
-    @GetMapping("/date_range")
-    public Result<Map<String, Object>> getDateRange() {
-        Map<String, Object> dateRangeData = clickstreamNodeService.getDateRange();
+    @GetMapping("/date_range/{lang}")
+    public Result<Map<String, Object>> getDateRange(@PathVariable String lang) {
+        Map<String, Object> dateRangeData = clickstreamNodeService.getDateRange(lang);
         return Result.success(dateRangeData);
     }
 
-    @GetMapping("/center/{date}")
-    public ResponseEntity<Result<List<ClickstreamNode>>> getCenterNodes(@PathVariable String date) {
-        List<ClickstreamNode> clickstreamNodes = clickstreamNodeService.getCenterNodes(date);
+    @GetMapping("/center/{lang}/{date}")
+    public ResponseEntity<Result<List<ClickstreamNode>>> getCenterNodes(@PathVariable String lang, @PathVariable String date) {
+        List<ClickstreamNode> clickstreamNodes = clickstreamNodeService.getCenterNodes(lang, date);
         return ResponseEntity.ok()
                 .cacheControl(CacheControl.maxAge(1, TimeUnit.HOURS)) // 缓存1小时
                 .body(Result.success(clickstreamNodes));
     }
 
-    @GetMapping("/list/{date}")
-    public ResponseEntity<Result<Object>> getClusterNodes(@PathVariable String date,
+    @GetMapping("/list/{lang}/{date}")
+    public ResponseEntity<Result<Object>> getClusterNodes(@PathVariable String lang,
+                                                          @PathVariable String date,
                                                           @RequestParam(defaultValue = "1") Integer pageNum,
                                                           @RequestParam(defaultValue = "10") Integer pageSize,
                                                           @RequestParam(defaultValue = "") String keyword) {
-        Map<String, Object> clickstreams = clickstreamNodeService.getNodeList(date, pageNum, pageSize, keyword);
+        Map<String, Object> clickstreams = clickstreamNodeService.getNodeList(lang, date, pageNum, pageSize, keyword);
         return ResponseEntity.ok()
                 .cacheControl(CacheControl.maxAge(1, TimeUnit.HOURS)) // 缓存1小时
                 .body(Result.success(clickstreams));
     }
 
-    @GetMapping("/cluster/{date}")
-    public ResponseEntity<Result<List<ClickstreamNode>>> getClusterNodes(@PathVariable String date, @RequestParam Integer center) {
-        List<ClickstreamNode> clickstreamNodes = clickstreamNodeService.getClusterNodes(date, center);
+    @GetMapping("/cluster/{lang}/{date}")
+    public ResponseEntity<Result<List<ClickstreamNode>>> getClusterNodes(@PathVariable String lang, @PathVariable String date, @RequestParam Integer center) {
+        List<ClickstreamNode> clickstreamNodes = clickstreamNodeService.getClusterNodes(lang, date, center);
         return ResponseEntity.ok()
                 .cacheControl(CacheControl.maxAge(1, TimeUnit.HOURS)) // 缓存1小时
                 .body(Result.success(clickstreamNodes));

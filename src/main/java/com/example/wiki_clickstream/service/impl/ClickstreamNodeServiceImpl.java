@@ -29,16 +29,15 @@ public class ClickstreamNodeServiceImpl extends ServiceImpl<ClickstreamNodeMappe
     private ClickstreamNodeMapper clickstreamNodeMapper;
 
     @Override
-    @Cacheable(value = "dateRangeCache", key = "'clickstream_node_date_range'")
-    public Map<String, Object> getDateRange() {
-
+    @Cacheable(value = "dateRangeCache", key = "'clickstream_node_date_range_' + #lang")
+    public Map<String, Object> getDateRange(String lang) {
         Map<String, Object> dateRangeData = new HashMap<>();
-        List<String> dateRanges = clickstreamNodeMapper.getDateRanges();
+        List<String> dateRanges = clickstreamNodeMapper.getDateRanges(lang);
 
         List<String> years = new ArrayList<>();
         Map<Integer, List<Integer>> months = new HashMap<>();
-        int maxYear = 0;
-        int maxMonth = 0;
+        int latestYear = 0;
+        int latestMonth = 0;
 
         for (String dateRange : dateRanges) {
             String[] parts = dateRange.split("-");
@@ -54,9 +53,9 @@ public class ClickstreamNodeServiceImpl extends ServiceImpl<ClickstreamNodeMappe
             }
             months.get(year).add(month);
 
-            if (year > maxYear || (year == maxYear && month > maxMonth)) {
-                maxYear = year;
-                maxMonth = month;
+            if (year > latestYear || (year == latestYear && month > latestMonth)) {
+                latestYear = year;
+                latestMonth = month;
             }
         }
 
@@ -71,17 +70,16 @@ public class ClickstreamNodeServiceImpl extends ServiceImpl<ClickstreamNodeMappe
 
         dateRangeData.put("years", years);
         dateRangeData.put("months", months);
-        dateRangeData.put("maxYear", maxYear);
-        dateRangeData.put("maxMonth", maxMonth);
+        dateRangeData.put("latestDate", String.valueOf(latestYear) + '-' + String.valueOf(latestMonth));
 
         return dateRangeData;
     }
 
     @Override
-    @Cacheable(value = "clickstreamNodeListCache", key = "'clickstream_node_list_' + #dateStr + '_' + #pageNum + '_' + #pageSize + '_' + #keyword")
-    public Map<String, Object> getNodeList(String dateStr, Integer pageNum, Integer pageSize, String keyword) {
+    @Cacheable(value = "clickstreamNodeListCache", key = "'clickstream_node_list_' + #lang + '_' + #dateStr + '_' + #pageNum + '_' + #pageSize + '_' + #keyword")
+    public Map<String, Object> getNodeList(String lang, String dateStr, Integer pageNum, Integer pageSize, String keyword) {
         LocalDate parsedDate = LocalDate.parse(dateStr.concat("-01"), DateTimeFormatter.ofPattern("yyyy-M-dd"));
-        List<ClickstreamNode> clickstreamNodes = clickstreamNodeMapper.getNodeList(parsedDate, (pageNum - 1) * pageSize, pageSize, keyword);
+        List<ClickstreamNode> clickstreamNodes = clickstreamNodeMapper.getNodeList(lang, parsedDate, (pageNum - 1) * pageSize, pageSize, keyword);
 
         List<ClickstreamNodeVo> list = new ArrayList<>();
         ClickstreamNodeVo currentCenter = null;
@@ -97,7 +95,7 @@ public class ClickstreamNodeServiceImpl extends ServiceImpl<ClickstreamNodeMappe
             }
         }
 
-        Long total = clickstreamNodeMapper.getListTotal(parsedDate, keyword);
+        Long total = clickstreamNodeMapper.getListTotal(lang, parsedDate, keyword);
 
         Map<String, Object> result = new HashMap<>();
         result.put("list", list);
@@ -106,16 +104,16 @@ public class ClickstreamNodeServiceImpl extends ServiceImpl<ClickstreamNodeMappe
         return result;
     }
 
-    @Cacheable(value = "clickstreamNodeCenterCache", key = "'clickstream_node_center_' + #dateStr")
-    public List<ClickstreamNode> getCenterNodes(String dateStr) {
+    @Cacheable(value = "clickstreamNodeCenterCache", key = "'clickstream_node_center_' + #lang + '_' + #dateStr")
+    public List<ClickstreamNode> getCenterNodes(String lang, String dateStr) {
         LocalDate parsedDate = LocalDate.parse(dateStr.concat("-01"), DateTimeFormatter.ofPattern("yyyy-M-dd"));
-        return clickstreamNodeMapper.getCenterNodes(parsedDate);
+        return clickstreamNodeMapper.getCenterNodes(lang, parsedDate);
     }
 
     @Override
-    @Cacheable(value = "clickstreamNodeClusterCache", key = "'clickstream_node_cluster_' + #dateStr + '_' + #center")
-    public List<ClickstreamNode> getClusterNodes(String dateStr, Integer center) {
+    @Cacheable(value = "clickstreamNodeClusterCache", key = "'clickstream_node_cluster_' + #lang + '_' + #dateStr + '_' + #center")
+    public List<ClickstreamNode> getClusterNodes(String lang, String dateStr, Integer center) {
         LocalDate parsedDate = LocalDate.parse(dateStr.concat("-01"), DateTimeFormatter.ofPattern("yyyy-M-dd"));
-        return clickstreamNodeMapper.getClusterNodes(parsedDate, center);
+        return clickstreamNodeMapper.getClusterNodes(lang, parsedDate, center);
     }
 }

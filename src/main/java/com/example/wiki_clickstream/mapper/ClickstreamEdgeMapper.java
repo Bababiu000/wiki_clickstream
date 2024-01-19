@@ -16,6 +16,6 @@ import java.util.List;
  * @since 2023-10-21
  */
 public interface ClickstreamEdgeMapper extends BaseMapper<ClickstreamEdge> {
-    List<ClickstreamEdge> getCenterEdges (@Param("date") LocalDate date);
-    List<ClickstreamEdge> getClusterEdges (@Param("date") LocalDate date, @Param("center") Integer center);
+    List<ClickstreamEdge> getCenterEdges (@Param("lang") String lang, @Param("date") LocalDate date);
+    List<ClickstreamEdge> getClusterEdges (@Param("lang") String lang, @Param("date") LocalDate date, @Param("center") Integer center);
 }

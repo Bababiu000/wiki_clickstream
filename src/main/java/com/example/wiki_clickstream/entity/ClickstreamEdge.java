@@ -41,4 +41,5 @@ public class ClickstreamEdge implements Serializable {
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate date;
 
+    private String lang;
 }

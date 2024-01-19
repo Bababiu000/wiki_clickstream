@@ -28,17 +28,17 @@ public class ClickstreamEdgeController {
     @Autowired
     IClickstreamEdgeService clickstreamEdgeService;
 
-    @GetMapping("/center/{date}")
-    public ResponseEntity<Result<List<ClickstreamEdge>>> getCenterEdges(@PathVariable String date) {
-        List<ClickstreamEdge> clickstreamEdges = clickstreamEdgeService.getCenterEdges(date);
+    @GetMapping("/center/{lang}/{date}")
+    public ResponseEntity<Result<List<ClickstreamEdge>>> getCenterEdges(@PathVariable String lang, @PathVariable String date) {
+        List<ClickstreamEdge> clickstreamEdges = clickstreamEdgeService.getCenterEdges(lang, date);
         return ResponseEntity.ok()
                 .cacheControl(CacheControl.maxAge(1, TimeUnit.HOURS)) // 缓存1小时
                 .body(Result.success(clickstreamEdges));
     }
 
-    @GetMapping("/cluster/{date}")
-    public ResponseEntity<Result<List<ClickstreamEdge>>> getClusterEdges(@PathVariable String date, @RequestParam Integer center) {
-        List<ClickstreamEdge> clickstreamEdges = clickstreamEdgeService.getClusterEdges(date, center);
+    @GetMapping("/cluster/{lang}/{date}")
+    public ResponseEntity<Result<List<ClickstreamEdge>>> getClusterEdges(@PathVariable String lang, @PathVariable String date, @RequestParam Integer center) {
+        List<ClickstreamEdge> clickstreamEdges = clickstreamEdgeService.getClusterEdges(lang, date, center);
         return ResponseEntity.ok()
                 .cacheControl(CacheControl.maxAge(1, TimeUnit.HOURS)) // 缓存1小时
                 .body(Result.success(clickstreamEdges));

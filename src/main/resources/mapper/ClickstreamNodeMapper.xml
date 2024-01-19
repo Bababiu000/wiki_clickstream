@@ -4,6 +4,7 @@
     <select id="getDateRanges" resultType="java.lang.String">
         SELECT DISTINCT DATE_FORMAT(date, '%Y-%m') AS date_range
         FROM clickstream_node
+        WHERE lang = #{lang}
     </select>
     <select id="getNodeList" resultType="com.example.wiki_clickstream.entity.ClickstreamNode">
         SELECT *
@@ -12,11 +13,12 @@
             SELECT dc_dict_idx, density
             FROM clickstream_node
             WHERE dict_idx = dc_dict_idx
+            AND lang = #{lang}
             AND date = #{date}
             AND dc_dict_idx IN (
                 SELECT dc_dict_idx
                 FROM clickstream_node
-                WHERE date = #{date}
+                WHERE lang = #{lang} AND date = #{date}
                 <if test="keyword != null and keyword != ''">
                     AND name LIKE CONCAT('%', #{keyword}, '%')
                 </if>
@@ -24,18 +26,19 @@
             ORDER BY density DESC
             LIMIT #{pageSize} OFFSET #{offset}
         ) AS centers ON c.dc_dict_idx = centers.dc_dict_idx
-        WHERE date = #{date}
+        WHERE lang = #{lang} AND date = #{date}
         ORDER BY centers.density DESC, c.dc_dict_idx, c.density DESC;
     </select>
     <select id="getListTotal" resultType="Long">
         SELECT COUNT(*) as total_count
         FROM clickstream_node
         WHERE dict_idx = dc_dict_idx
+        AND lang = #{lang}
         AND date = #{date}
         AND dc_dict_idx IN (
             SELECT dc_dict_idx
             FROM clickstream_node
-            WHERE date = #{date}
+            WHERE lang = #{lang} AND date = #{date}
             <if test="keyword != null and keyword != ''">
                 AND name LIKE CONCAT('%', #{keyword}, '%')
             </if>
@@ -44,11 +47,11 @@
     <select id="getCenterNodes" resultType="com.example.wiki_clickstream.entity.ClickstreamNode">
         SELECT *
         FROM clickstream_node
-        WHERE date = #{date} AND dict_idx = dc_dict_idx ORDER BY density desc
+        WHERE lang = #{lang} AND  date = #{date} AND dict_idx = dc_dict_idx ORDER BY density desc
     </select>
     <select id="getClusterNodes" resultType="com.example.wiki_clickstream.entity.ClickstreamNode">
         SELECT *
         FROM clickstream_node
-        WHERE date = #{date} AND dc_dict_idx = #{center} ORDER BY density desc
+        WHERE lang = #{lang} AND date = #{date} AND dc_dict_idx = #{center} ORDER BY density desc
     </select>
 </mapper>

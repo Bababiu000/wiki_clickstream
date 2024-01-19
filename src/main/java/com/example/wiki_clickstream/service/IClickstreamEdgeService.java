@@ -15,7 +15,7 @@ import java.util.List;
  */
 public interface IClickstreamEdgeService extends IService<ClickstreamEdge> {
 
-    List<ClickstreamEdge> getCenterEdges(String date);
+    List<ClickstreamEdge> getCenterEdges(String lang, String date);
 
-    List<ClickstreamEdge> getClusterEdges(String date, Integer center);
+    List<ClickstreamEdge> getClusterEdges(String lang, String date, Integer center);
 }
