@@ -28,9 +28,11 @@ public class ClickstreamNodeController {
     private IClickstreamNodeService clickstreamNodeService;
 
     @GetMapping("/date_range/{lang}")
-    public Result<Map<String, Object>> getDateRange(@PathVariable String lang) {
+    public ResponseEntity<Result<Map<String, Object>>> getDateRange(@PathVariable String lang) {
         Map<String, Object> dateRangeData = clickstreamNodeService.getDateRange(lang);
-        return Result.success(dateRangeData);
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.maxAge(1, TimeUnit.HOURS)) // 缓存1小时
+                .body(Result.success(dateRangeData));
     }
 
     @GetMapping("/center/{lang}/{date}")
@@ -61,5 +63,12 @@ public class ClickstreamNodeController {
                 .body(Result.success(clickstreamNodes));
     }
 
+    @GetMapping("/similarity/{lang}")
+    public ResponseEntity<Result<Map<String, Object>>> getMonthlyClusterSimilarity(@PathVariable String lang, @RequestParam String date1, @RequestParam String date2) {
+        Map<String, Object> monthlyClusterSimilarity = clickstreamNodeService.getMonthlyClusterSimilarity(lang, date1, date2);
+        return ResponseEntity.ok()
+//                .cacheControl(CacheControl.maxAge(1, TimeUnit.HOURS)) // 缓存1小时
+                .body(Result.success(monthlyClusterSimilarity));
+    }
 }
 

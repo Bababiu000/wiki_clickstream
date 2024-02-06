@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.wiki_clickstream.mapper.ClickstreamNodeMapper">
-    <select id="getDateRanges" resultType="java.lang.String">
+    <select id="getDateRange" resultType="java.lang.String">
         SELECT DISTINCT DATE_FORMAT(date, '%Y-%m') AS date_range
         FROM clickstream_node
         WHERE lang = #{lang}
@@ -53,5 +53,19 @@
         SELECT *
         FROM clickstream_node
         WHERE lang = #{lang} AND date = #{date} AND dc_dict_idx = #{center} ORDER BY density desc
+    </select>
+    <select id="getAllClusterNodesName" resultType="java.lang.String">
+        SELECT GROUP_CONCAT(name) AS names
+        FROM clickstream_node c_n
+            INNER JOIN (
+            SELECT dc_dict_idx, density as dc_density
+            FROM clickstream_node
+            WHERE dict_idx = dc_dict_idx
+            AND lang = #{lang}
+            AND date = #{date}
+            ) AS centers ON c_n.dc_dict_idx = centers.dc_dict_idx
+        WHERE lang = #{lang} AND date = #{date}
+        GROUP BY date, lang, c_n.dc_dict_idx
+        ORDER BY dc_density DESC
     </select>
 </mapper>

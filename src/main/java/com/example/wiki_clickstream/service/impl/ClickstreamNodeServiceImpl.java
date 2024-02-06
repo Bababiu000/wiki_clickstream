@@ -13,6 +13,8 @@ import javax.annotation.Resource;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
+
 
 /**
  * <p>
@@ -32,15 +34,15 @@ public class ClickstreamNodeServiceImpl extends ServiceImpl<ClickstreamNodeMappe
     @Cacheable(value = "dateRangeCache", key = "'clickstream_node_date_range_' + #lang")
     public Map<String, Object> getDateRange(String lang) {
         Map<String, Object> dateRangeData = new HashMap<>();
-        List<String> dateRanges = clickstreamNodeMapper.getDateRanges(lang);
+        List<String> dates = clickstreamNodeMapper.getDateRange(lang);
 
         List<String> years = new ArrayList<>();
         Map<Integer, List<Integer>> months = new HashMap<>();
         int latestYear = 0;
         int latestMonth = 0;
 
-        for (String dateRange : dateRanges) {
-            String[] parts = dateRange.split("-");
+        for (String date : dates) {
+            String[] parts = date.split("-");
             int year = Integer.parseInt(parts[0]);
             int month = Integer.parseInt(parts[1]);
 
@@ -68,6 +70,7 @@ public class ClickstreamNodeServiceImpl extends ServiceImpl<ClickstreamNodeMappe
             Collections.sort(monthList);
         }
 
+        dateRangeData.put("dates", dates);
         dateRangeData.put("years", years);
         dateRangeData.put("months", months);
         dateRangeData.put("latestDate", String.valueOf(latestYear) + '-' + String.valueOf(latestMonth));
@@ -115,5 +118,59 @@ public class ClickstreamNodeServiceImpl extends ServiceImpl<ClickstreamNodeMappe
     public List<ClickstreamNode> getClusterNodes(String lang, String dateStr, Integer center) {
         LocalDate parsedDate = LocalDate.parse(dateStr.concat("-01"), DateTimeFormatter.ofPattern("yyyy-M-dd"));
         return clickstreamNodeMapper.getClusterNodes(lang, parsedDate, center);
+    }
+
+    @Override
+//    @Cacheable(value = "clickstreamNodeAllClusterNodesNameCache", key = "'clickstream_node_similarity_' + #lang + '_' + #dateStr1 + '_' + #dateStr2")
+    public Map<String, Object> getMonthlyClusterSimilarity(String lang, String dateStr1, String dateStr2) {
+        LocalDate parsedDate1 = LocalDate.parse(dateStr1.concat("-01"), DateTimeFormatter.ofPattern("yyyy-M-dd"));
+        LocalDate parsedDate2 = LocalDate.parse(dateStr2.concat("-01"), DateTimeFormatter.ofPattern("yyyy-M-dd"));
+        List<String> allClusterNodesNameStr1 = clickstreamNodeMapper.getAllClusterNodesName(lang, parsedDate1);
+        List<String> allClusterNodesNameStr2 = clickstreamNodeMapper.getAllClusterNodesName(lang, parsedDate2);
+        List<List<String>> allClusterNodesNameList1 = allClusterNodesNameStr1.stream()
+                .map(str -> Arrays.asList(str.split(",")))
+                .collect(Collectors.toList());
+        List<List<String>> allClusterNodesNameList2 = allClusterNodesNameStr2.stream()
+                .map(str -> Arrays.asList(str.split(",")))
+                .collect(Collectors.toList());
+
+        double totalSimilarity = 0.0;
+        List<List<Double>> similarityList = new ArrayList<>();
+        for (List<String> set1 : allClusterNodesNameList1) {
+            List<Double> col = new ArrayList<>();
+            for (List<String> set2 : allClusterNodesNameList2) {
+                double similarity = calculateSingleJaccardSimilarity(set1, set2);
+                totalSimilarity += similarity;
+                col.add(similarity);
+            }
+            similarityList.add(col);
+        }
+        double averageSimilarity = totalSimilarity / (allClusterNodesNameList1.size() * allClusterNodesNameList2.size());
+        Integer colSize = allClusterNodesNameList1.size();
+        Integer rowSize = allClusterNodesNameList2.size();
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("similarityList", similarityList);
+        result.put("averageSimilarity", averageSimilarity);
+        result.put("rowSize", rowSize);
+        result.put("colSize", colSize);
+
+        return result;
+    }
+
+
+    private static double calculateSingleJaccardSimilarity(List<String> set1, List<String> set2) {
+        Set<String> intersection = new HashSet<>(set1);
+        intersection.retainAll(set2);
+
+        Set<String> union = new HashSet<>(set1);
+        union.addAll(set2);
+
+        // 避免除以零
+        if (union.isEmpty()) {
+            return 0.0;
+        }
+
+        return (double) intersection.size() / union.size();
     }
 }

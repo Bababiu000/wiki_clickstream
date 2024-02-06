@@ -16,7 +16,7 @@ import java.util.List;
  */
 public interface ClickstreamNodeMapper extends BaseMapper<ClickstreamNode> {
 
-    List<String> getDateRanges(@Param("lang") String lang);
+    List<String> getDateRange(@Param("lang") String lang);
 
     List<ClickstreamNode> getNodeList(@Param("lang") String lang, @Param("date") LocalDate date, @Param("offset") Integer offset,
                                   @Param("pageSize") Integer pageSize, @Param("keyword") String keyword);
@@ -26,4 +26,6 @@ public interface ClickstreamNodeMapper extends BaseMapper<ClickstreamNode> {
     List<ClickstreamNode> getCenterNodes(@Param("lang") String lang, @Param("date") LocalDate date);
 
     List<ClickstreamNode> getClusterNodes(@Param("lang") String lang, @Param("date") LocalDate date, @Param("center") Integer center);
+
+    List<String> getAllClusterNodesName(@Param("lang") String lang, @Param("date") LocalDate date);
 }
