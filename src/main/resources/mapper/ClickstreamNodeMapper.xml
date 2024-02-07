@@ -52,7 +52,7 @@
     <select id="getClusterNodes" resultType="com.example.wiki_clickstream.entity.ClickstreamNode">
         SELECT *
         FROM clickstream_node
-        WHERE lang = #{lang} AND date = #{date} AND dc_dict_idx = #{center} ORDER BY density desc
+        WHERE lang = #{lang} AND date = #{date} AND label = #{label} ORDER BY density desc
     </select>
     <select id="getAllClusterNodesName" resultType="java.lang.String">
         SELECT GROUP_CONCAT(name) AS names

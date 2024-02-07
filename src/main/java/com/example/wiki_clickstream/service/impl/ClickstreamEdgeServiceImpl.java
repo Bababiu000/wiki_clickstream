@@ -34,9 +34,9 @@ public class ClickstreamEdgeServiceImpl extends ServiceImpl<ClickstreamEdgeMappe
     }
 
     @Override
-    @Cacheable(value = "clickstreamEdgeClusterCache", key = "'clickstream_edge_cluster_' + #lang + '_' + #dateStr + '_' + #center")
-    public List<ClickstreamEdge> getClusterEdges(String lang, String dateStr, Integer center) {
+    @Cacheable(value = "clickstreamEdgeClusterCache", key = "'clickstream_edge_cluster_' + #lang + '_' + #dateStr + '_' + #label")
+    public List<ClickstreamEdge> getClusterEdges(String lang, String dateStr, Integer label) {
         LocalDate parsedDate = LocalDate.parse(dateStr.concat("-01"), DateTimeFormatter.ofPattern("yyyy-M-dd"));
-        return clickstreamEdgeMapper.getClusterEdges(lang, parsedDate, center);
+        return clickstreamEdgeMapper.getClusterEdges(lang, parsedDate, label);
     }
 }

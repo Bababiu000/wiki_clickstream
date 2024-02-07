@@ -114,10 +114,10 @@ public class ClickstreamNodeServiceImpl extends ServiceImpl<ClickstreamNodeMappe
     }
 
     @Override
-    @Cacheable(value = "clickstreamNodeClusterCache", key = "'clickstream_node_cluster_' + #lang + '_' + #dateStr + '_' + #center")
-    public List<ClickstreamNode> getClusterNodes(String lang, String dateStr, Integer center) {
+    @Cacheable(value = "clickstreamNodeClusterCache", key = "'clickstream_node_cluster_' + #lang + '_' + #dateStr + '_' + #label")
+    public List<ClickstreamNode> getClusterNodes(String lang, String dateStr, Integer label) {
         LocalDate parsedDate = LocalDate.parse(dateStr.concat("-01"), DateTimeFormatter.ofPattern("yyyy-M-dd"));
-        return clickstreamNodeMapper.getClusterNodes(lang, parsedDate, center);
+        return clickstreamNodeMapper.getClusterNodes(lang, parsedDate, label);
     }
 
     @Override

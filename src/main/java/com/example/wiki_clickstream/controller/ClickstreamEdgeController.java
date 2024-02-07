@@ -37,8 +37,8 @@ public class ClickstreamEdgeController {
     }
 
     @GetMapping("/cluster/{lang}/{date}")
-    public ResponseEntity<Result<List<ClickstreamEdge>>> getClusterEdges(@PathVariable String lang, @PathVariable String date, @RequestParam Integer center) {
-        List<ClickstreamEdge> clickstreamEdges = clickstreamEdgeService.getClusterEdges(lang, date, center);
+    public ResponseEntity<Result<List<ClickstreamEdge>>> getClusterEdges(@PathVariable String lang, @PathVariable String date, @RequestParam Integer label) {
+        List<ClickstreamEdge> clickstreamEdges = clickstreamEdgeService.getClusterEdges(lang, date, label);
         return ResponseEntity.ok()
                 .cacheControl(CacheControl.maxAge(1, TimeUnit.HOURS)) // 缓存1小时
                 .body(Result.success(clickstreamEdges));

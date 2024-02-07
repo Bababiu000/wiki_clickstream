@@ -14,6 +14,6 @@
         FROM clickstream_edge c_e
         INNER JOIN clickstream_node c_n_1 ON c_n_1.lang = c_e.lang AND c_n_1.date = c_e.date AND c_n_1.dict_idx = c_e.source_dict_idx
         LEFT JOIN clickstream_node c_n_2 ON c_n_2.lang = c_e.lang AND c_n_2.date = c_e.date AND c_n_2.dict_idx = c_e.target_dict_idx
-        WHERE c_n_1.dc_dict_idx = #{center} AND c_n_2.dc_dict_idx = #{center} AND c_e.lang = #{lang} AND c_e.date = #{date};
+        WHERE c_n_1.label = #{label} AND c_n_2.label = #{label} AND c_e.lang = #{lang} AND c_e.date = #{date};
     </select>
 </mapper>

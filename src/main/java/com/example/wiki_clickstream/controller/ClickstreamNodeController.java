@@ -56,8 +56,8 @@ public class ClickstreamNodeController {
     }
 
     @GetMapping("/cluster/{lang}/{date}")
-    public ResponseEntity<Result<List<ClickstreamNode>>> getClusterNodes(@PathVariable String lang, @PathVariable String date, @RequestParam Integer center) {
-        List<ClickstreamNode> clickstreamNodes = clickstreamNodeService.getClusterNodes(lang, date, center);
+    public ResponseEntity<Result<List<ClickstreamNode>>> getClusterNodes(@PathVariable String lang, @PathVariable String date, @RequestParam Integer label) {
+        List<ClickstreamNode> clickstreamNodes = clickstreamNodeService.getClusterNodes(lang, date, label);
         return ResponseEntity.ok()
                 .cacheControl(CacheControl.maxAge(1, TimeUnit.HOURS)) // 缓存1小时
                 .body(Result.success(clickstreamNodes));
