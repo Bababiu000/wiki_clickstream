@@ -23,5 +23,7 @@ public interface IClickstreamNodeService extends IService<ClickstreamNode> {
 
     List<ClickstreamNode> getClusterNodes(String lang, String date, Integer label);
 
+    String[] getClusterNodesName(String lang, String date, Integer label);
+
     Map<String, Object> getMonthlyClusterSimilarity(String lang, String date1, String date2);
 }

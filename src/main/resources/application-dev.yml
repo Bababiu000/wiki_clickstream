@@ -1,6 +1,6 @@
 spring:
     datasource:
-        url: jdbc:mysql://localhost:3306/wiki_clickstream?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
+        url: jdbc:mysql://localhost:3306/wiki_clickstream?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&sessionVariables=group_concat_max_len=50000
         username: root
         password: colt1911
         driver-class-name: com.mysql.cj.jdbc.Driver
@@ -11,3 +11,4 @@ spring:
 
 mybatis:
     mapper-locations: "classpath:mybatis/*Mapper.xml"
+

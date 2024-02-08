@@ -63,11 +63,19 @@ public class ClickstreamNodeController {
                 .body(Result.success(clickstreamNodes));
     }
 
+    @GetMapping("/cluster/name/{lang}/{date}")
+    public ResponseEntity<Result<String[]>> get(@PathVariable String lang, @PathVariable String date, @RequestParam Integer label) {
+        String[] clickstreamNodesName = clickstreamNodeService.getClusterNodesName(lang, date, label);
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.maxAge(1, TimeUnit.HOURS)) // 缓存1小时
+                .body(Result.success(clickstreamNodesName));
+    }
+
     @GetMapping("/similarity/{lang}")
     public ResponseEntity<Result<Map<String, Object>>> getMonthlyClusterSimilarity(@PathVariable String lang, @RequestParam String date1, @RequestParam String date2) {
         Map<String, Object> monthlyClusterSimilarity = clickstreamNodeService.getMonthlyClusterSimilarity(lang, date1, date2);
         return ResponseEntity.ok()
-//                .cacheControl(CacheControl.maxAge(1, TimeUnit.HOURS)) // 缓存1小时
+                .cacheControl(CacheControl.maxAge(1, TimeUnit.HOURS)) // 缓存1小时
                 .body(Result.success(monthlyClusterSimilarity));
     }
 }

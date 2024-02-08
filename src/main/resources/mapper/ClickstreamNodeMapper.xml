@@ -54,8 +54,8 @@
         FROM clickstream_node
         WHERE lang = #{lang} AND date = #{date} AND label = #{label} ORDER BY density desc
     </select>
-    <select id="getAllClusterNodesName" resultType="java.lang.String">
-        SELECT GROUP_CONCAT(name) AS names
+    <select id="getClusterNodesName" resultType="java.lang.String">
+        SELECT GROUP_CONCAT(name ORDER BY c_n.density DESC) AS names
         FROM clickstream_node c_n
             INNER JOIN (
             SELECT dc_dict_idx, density as dc_density
@@ -63,6 +63,9 @@
             WHERE dict_idx = dc_dict_idx
             AND lang = #{lang}
             AND date = #{date}
+            <if test="label != null and label != ''">
+                AND label = #{label}
+            </if>
             ) AS centers ON c_n.dc_dict_idx = centers.dc_dict_idx
         WHERE lang = #{lang} AND date = #{date}
         GROUP BY date, lang, c_n.dc_dict_idx

@@ -121,12 +121,20 @@ public class ClickstreamNodeServiceImpl extends ServiceImpl<ClickstreamNodeMappe
     }
 
     @Override
-//    @Cacheable(value = "clickstreamNodeAllClusterNodesNameCache", key = "'clickstream_node_similarity_' + #lang + '_' + #dateStr1 + '_' + #dateStr2")
+    @Cacheable(value = "clickstreamNodesNameCache", key = "'clickstream_node_name_' + #lang + '_' + #dateStr + '_' + #label")
+    public String[] getClusterNodesName(String lang, String dateStr, Integer label) {
+        LocalDate parsedDate = LocalDate.parse(dateStr.concat("-01"), DateTimeFormatter.ofPattern("yyyy-M-dd"));
+        String[] result = clickstreamNodeMapper.getClusterNodesName(lang, parsedDate, label).get(0).split(",");
+        return result;
+    }
+
+    @Override
+    @Cacheable(value = "clickstreamNodeMonthlyClusterSimilarityCache", key = "'clickstream_node_similarity_' + #lang + '_' + #dateStr1 + '_' + #dateStr2")
     public Map<String, Object> getMonthlyClusterSimilarity(String lang, String dateStr1, String dateStr2) {
         LocalDate parsedDate1 = LocalDate.parse(dateStr1.concat("-01"), DateTimeFormatter.ofPattern("yyyy-M-dd"));
         LocalDate parsedDate2 = LocalDate.parse(dateStr2.concat("-01"), DateTimeFormatter.ofPattern("yyyy-M-dd"));
-        List<String> allClusterNodesNameStr1 = clickstreamNodeMapper.getAllClusterNodesName(lang, parsedDate1);
-        List<String> allClusterNodesNameStr2 = clickstreamNodeMapper.getAllClusterNodesName(lang, parsedDate2);
+        List<String> allClusterNodesNameStr1 = clickstreamNodeMapper.getClusterNodesName(lang, parsedDate1, null);
+        List<String> allClusterNodesNameStr2 = clickstreamNodeMapper.getClusterNodesName(lang, parsedDate2, null);
         List<List<String>> allClusterNodesNameList1 = allClusterNodesNameStr1.stream()
                 .map(str -> Arrays.asList(str.split(",")))
                 .collect(Collectors.toList());
@@ -134,24 +142,20 @@ public class ClickstreamNodeServiceImpl extends ServiceImpl<ClickstreamNodeMappe
                 .map(str -> Arrays.asList(str.split(",")))
                 .collect(Collectors.toList());
 
-        double totalSimilarity = 0.0;
         List<List<Double>> similarityList = new ArrayList<>();
         for (List<String> set1 : allClusterNodesNameList1) {
             List<Double> col = new ArrayList<>();
             for (List<String> set2 : allClusterNodesNameList2) {
                 double similarity = calculateSingleJaccardSimilarity(set1, set2);
-                totalSimilarity += similarity;
                 col.add(similarity);
             }
             similarityList.add(col);
         }
-        double averageSimilarity = totalSimilarity / (allClusterNodesNameList1.size() * allClusterNodesNameList2.size());
         Integer colSize = allClusterNodesNameList1.size();
         Integer rowSize = allClusterNodesNameList2.size();
 
         Map<String, Object> result = new HashMap<>();
         result.put("similarityList", similarityList);
-        result.put("averageSimilarity", averageSimilarity);
         result.put("rowSize", rowSize);
         result.put("colSize", colSize);
 

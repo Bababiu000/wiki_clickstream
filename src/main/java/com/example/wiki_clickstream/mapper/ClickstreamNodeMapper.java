@@ -27,5 +27,5 @@ public interface ClickstreamNodeMapper extends BaseMapper<ClickstreamNode> {
 
     List<ClickstreamNode> getClusterNodes(@Param("lang") String lang, @Param("date") LocalDate date, @Param("label") Integer label);
 
-    List<String> getAllClusterNodesName(@Param("lang") String lang, @Param("date") LocalDate date);
+    List<String> getClusterNodesName(@Param("lang") String lang, @Param("date") LocalDate date, @Param("label") Integer label);
 }
