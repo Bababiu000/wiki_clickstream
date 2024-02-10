@@ -35,11 +35,8 @@ public class ClickstreamNodeServiceImpl extends ServiceImpl<ClickstreamNodeMappe
     public Map<String, Object> getDateRange(String lang) {
         Map<String, Object> dateRangeData = new HashMap<>();
         List<String> dates = clickstreamNodeMapper.getDateRange(lang);
-
         List<String> years = new ArrayList<>();
         Map<Integer, List<Integer>> months = new HashMap<>();
-        int latestYear = 0;
-        int latestMonth = 0;
 
         for (String date : dates) {
             String[] parts = date.split("-");
@@ -54,11 +51,6 @@ public class ClickstreamNodeServiceImpl extends ServiceImpl<ClickstreamNodeMappe
                 months.put(year, new ArrayList<>());
             }
             months.get(year).add(month);
-
-            if (year > latestYear || (year == latestYear && month > latestMonth)) {
-                latestYear = year;
-                latestMonth = month;
-            }
         }
 
         // 对 years 列表进行排序
@@ -73,7 +65,7 @@ public class ClickstreamNodeServiceImpl extends ServiceImpl<ClickstreamNodeMappe
         dateRangeData.put("dates", dates);
         dateRangeData.put("years", years);
         dateRangeData.put("months", months);
-        dateRangeData.put("latestDate", String.valueOf(latestYear) + '-' + String.valueOf(latestMonth));
+        dateRangeData.put("latestDate", dates.get(dates.size() - 1));
 
         return dateRangeData;
     }
