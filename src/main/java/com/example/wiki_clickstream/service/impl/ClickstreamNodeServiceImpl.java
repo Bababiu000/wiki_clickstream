@@ -102,14 +102,18 @@ public class ClickstreamNodeServiceImpl extends ServiceImpl<ClickstreamNodeMappe
     @Cacheable(value = "clickstreamNodeCenterCache", key = "'clickstream_node_center_' + #lang + '_' + #dateStr")
     public List<ClickstreamNode> getCenterNodes(String lang, String dateStr) {
         LocalDate parsedDate = LocalDate.parse(dateStr.concat("-01"), DateTimeFormatter.ofPattern("yyyy-M-dd"));
-        return clickstreamNodeMapper.getCenterNodes(lang, parsedDate);
+        List<ClickstreamNode> result = clickstreamNodeMapper.getCenterNodes(lang, parsedDate);
+        remapCoordinates(result);
+        return result;
     }
 
     @Override
     @Cacheable(value = "clickstreamNodeClusterCache", key = "'clickstream_node_cluster_' + #lang + '_' + #dateStr + '_' + #label")
     public List<ClickstreamNode> getClusterNodes(String lang, String dateStr, Integer label) {
         LocalDate parsedDate = LocalDate.parse(dateStr.concat("-01"), DateTimeFormatter.ofPattern("yyyy-M-dd"));
-        return clickstreamNodeMapper.getClusterNodes(lang, parsedDate, label);
+        List<ClickstreamNode> result =  clickstreamNodeMapper.getClusterNodes(lang, parsedDate, label);
+        remapCoordinates(result);
+        return result;
     }
 
     @Override
@@ -155,7 +159,7 @@ public class ClickstreamNodeServiceImpl extends ServiceImpl<ClickstreamNodeMappe
     }
 
 
-    private static double calculateSingleJaccardSimilarity(List<String> set1, List<String> set2) {
+    private double calculateSingleJaccardSimilarity(List<String> set1, List<String> set2) {
         Set<String> intersection = new HashSet<>(set1);
         intersection.retainAll(set2);
 
@@ -168,5 +172,21 @@ public class ClickstreamNodeServiceImpl extends ServiceImpl<ClickstreamNodeMappe
         }
 
         return (double) intersection.size() / union.size();
+    }
+
+    private void remapCoordinates(List<ClickstreamNode> list) {
+        // 找到x和y属性的最小值
+        double minX = Double.MAX_VALUE;
+        double minY = Double.MAX_VALUE;
+        for (ClickstreamNode node : list) {
+            minX = Math.min(minX, node.getX());
+            minY = Math.min(minY, node.getY());
+        }
+
+        // 将每个节点的x和y属性都减去最小值
+        for (ClickstreamNode node : list) {
+            node.setX(node.getX() - minX + 1);
+            node.setY(node.getY() - minY + 1);
+        }
     }
 }

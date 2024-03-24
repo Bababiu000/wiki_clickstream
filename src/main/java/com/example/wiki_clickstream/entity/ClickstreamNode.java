@@ -39,6 +39,10 @@ public class ClickstreamNode implements Serializable {
 
     private Long dcDictIdx;
 
+    private Double x;
+
+    private Double y;
+
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate date;
